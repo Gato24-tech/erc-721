@@ -1,17 +1,19 @@
 const hre = require("hardhat");
 
 async function main() {
+    // Obtener la fábrica del contrato
+    const MyNFT = await hre.ethers.getContractFactory("MyNFT"); 
+    
+    // Desplegar el contrato
+    const myNFT = await MyNFT.deploy();
+    await myNFT.waitForDeployment(); 
 
-const MyNFT = await hre.ethers.getContractAt("MyNFT");
-const myNFT = await MyNFT.deploy();
-await myNFT.wairForDeployment();
-
-const contractAddress = await myNFT.getAddress();
-console.log("contrato NFT desplegado en:", contractAddress);
+    // Obtener la dirección del contrato desplegado
+    const contractAddress = await myNFT.getAddress();
+    console.log("Contrato NFT desplegado en:", contractAddress);
 }
 
 main().catch((error) => {
     console.error(error);
-    process.exit.code = 1;
-
+    process.exit(1);
 });
