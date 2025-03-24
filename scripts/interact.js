@@ -1,29 +1,32 @@
 const hre = require("hardhat");
 
 async function main() {
-    try {
-        // Conecto el contrato con owner y recipient
-        const [owner, recipient] = await hre.ethers.getSigners();
-        console.log("Address owner:", owner.address);
-        console.log("Address recipient:", recipient.address);
+    // Dirección del contrato desplegado (ajústala si es diferente)
+    const contractAddress = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";  
 
-        // Conectar con el contrato MyNFT
-        const contract = await hre.ethers.getContractAt("MyNFT", "0x5FbDB2315678afecb367f032d93F642f64180aa3");
+    // Obtener la fábrica del contrato
+    const MyNFT = await hre.ethers.getContractFactory("MyNFT");
 
-        // Leer información del contrato (ver saldo)
-        const balance = await contract.getBalance();
-        console.log("Saldo actual:", hre.ethers.formatEther(balance), "ETH");
+    // Adjuntar el contrato ya desplegado en lugar de volver a desplegarlo
+    const myNFT = MyNFT.attach(contractAddress);
+    console.log("Contrato NFT adjuntado en:", contractAddress);
 
-        // Realizamos una transferencia
-        const tx = await contract.deposit({ value: hre.ethers.parseEther("1") });
-        await tx.wait();
-        console.log("Depósito realizado!");
+    // Obtener el dueño del contrato
+    const [owner] = await hre.ethers.getSigners();
+    console.log("Interactuando como:", owner.address);
 
-        console.log("Script ejecutado correctamente");
-    } catch (error) {
-        console.error("Error en el script:", error);
-        process.exitCode = 1;
-    }
+    // Mint NFT a la dirección del owner
+    const mintTx = await myNFT.mint(owner.address);
+    await mintTx.wait();
+    console.log("NFT minteado para:", owner.address);
+
+    // Obtener el balance del dueño
+    const balance = await myNFT.balanceOf(owner.address);
+    console.log("Balance de NFTs del dueño:", balance.toString());
 }
 
-main();
+// Llamar a main() correctamente
+main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+});

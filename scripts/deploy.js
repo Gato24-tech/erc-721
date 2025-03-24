@@ -1,19 +1,27 @@
-const hre = require("hardhat");
+const { ethers } = require("hardhat"); // ✅ Importa ethers correctamente
 
 async function main() {
-    // Obtener la fábrica del contrato
-    const MyNFT = await hre.ethers.getContractFactory("MyNFT"); 
-    
-    // Desplegar el contrato
-    const myNFT = await MyNFT.deploy();
-    await myNFT.waitForDeployment(); 
+    const [owner] = await ethers.getSigners(); // ✅ Obtiene el deployer
 
-    // Obtener la dirección del contrato desplegado
-    const contractAddress = await myNFT.getAddress();
-    console.log("Contrato NFT desplegado en:", contractAddress);
+    console.log("Deploying contract with account:", owner.address);
+
+    const NFT = await ethers.getContractFactory("MyNFT");
+    const nft = await NFT.deploy(); // ✅ Desplega el contrato
+
+    await nft.waitForDeployment();
+    console.log("NFT contract deployed at:", await nft.getAddress());
+
+    // ✅ Minta un NFT correctamente
+    const mintTx = await nft.mint(owner.address);
+    await mintTx.wait();
+
+    console.log("Minted NFT to:", owner.address);
 }
 
-main().catch((error) => {
-    console.error(error);
-    process.exit(1);
-});
+// ✅ Llama a main() correctamente dentro de un bloque try-catch
+main()
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
