@@ -7,12 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MyNFT is ERC721, Ownable(msg.sender) {
 
     uint256 private _nextTokenId;
-
+    uint256 public constant MAX_SUPPLY = 10000;
     constructor() ERC721("MyNFT", "MNFT") {}
+    uint256 private totalMinted;
 
-    function mint(address to) external onlyOwner {
-        uint256 tokenId = _nextTokenId;
-        _nextTokenId++;
+    function mint(address to) public {
+        require(totalMinted < MAX_SUPPLY, "Se ha alcanzado el max de NFTs disponibles.");
+        uint256 tokenId = totalMinted;
+        totalMinted++;
         _safeMint(to, tokenId);
     }
 
