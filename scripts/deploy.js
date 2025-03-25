@@ -2,9 +2,8 @@ const { ethers } = require("hardhat"); // ✅ Importa ethers correctamente
 
 async function main() {
     const [owner] = await ethers.getSigners(); // ✅ Obtiene el deployer
-
-    console.log("Deploying contract with account:", owner.address);
-
+    console.log("Desplegando en la cuenta:", owner.address);
+    
     const NFT = await ethers.getContractFactory("MyNFT");
     const nft = await NFT.deploy(); // ✅ Desplega el contrato
 
