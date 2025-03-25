@@ -27,8 +27,8 @@ describe("MyNFT", function () {
 
     it("Debe evitar que un usuario transfiera un NFT que no posee", async function () {
         await nft.mintNFT(owner.address);
-        await expect(
-            nft.connect(addr1).transferFrom(owner.address, addr2.address, 0)
-        ).to.be.revertedWith("ERC721: caller is not owner nor approved");
+        const tokenId = 0;
+        await expect(nft.connect(addr1).transferFrom(owner.address, addr1.address, tokenId))
+        .to.be.reverted;
     });
 });

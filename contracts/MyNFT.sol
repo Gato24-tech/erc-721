@@ -11,7 +11,7 @@ contract MyNFT is ERC721, Ownable(msg.sender) {
     constructor() ERC721("MyNFT", "MNFT") {}
     uint256 private totalMinted;
 
-    function mint(address to) public {
+    function mintNFT(address to) public {
         require(totalMinted < MAX_SUPPLY, "Se ha alcanzado el max de NFTs disponibles.");
         uint256 tokenId = totalMinted;
         totalMinted++;
