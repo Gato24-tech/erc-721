@@ -19,6 +19,13 @@ describe("MyNFT", function () {
         expect(await nft.balanceOf(owner.address)).to.equal(1);
     });
 
+    it("Debe mintear un NFT con URI", async function () {
+        const uri = "ipfs://exampleUri";
+        await MyNFT.mintNFT(owner.address, uri);
+
+        expect(await MyNFT.tokenUri(1)).to.equal(uri);
+    });
+
     it("Debe permitir transferir un NFT", async function () {
         await nft.mintNFT(owner.address);
         await nft.transferFrom(owner.address, addr1.address, 0);
@@ -31,4 +38,8 @@ describe("MyNFT", function () {
         await expect(nft.connect(addr1).transferFrom(owner.address, addr1.address, tokenId))
         .to.be.reverted;
     });
+
+    it("Debe fallar si un usuario intenta mintear", async function() {
+    await expect(MyNFT.connect(addr).mintNFT(addr1.address, "ipfs://exampleUri")).to.be.revertedWith("Ownable: caller is not the owner");
+});
 });
