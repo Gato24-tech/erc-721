@@ -33,13 +33,14 @@ async function main() {
 
     // Mint NFT a owner
     const tokenURI = "https://my-json-server.typicode.com/example/metadata/1";
-    const mintTx = await myNFT.mintNFT(owner.address, "ipfs://token-uri");
+    const mintTx = await myNFT.mint(tokenURI);
     await mintTx.wait();
-    console.log("NFT minteado para:");
+    console.log(`NFT minteado con token URI: ${tokenURI}`);
+
 
     // Ver balance del dueño
     const balance = await myNFT.balanceOf(owner.address);
-    console.log("Balance de NFTs del dueño:", balance.toString());
+    console.log(`Balance de ${owner.address}: ${balance.toString()}`);
 
     // Obtener un NFT válido del owner
     const tokenId = await getValidTokenId(myNFT, owner);
