@@ -26,21 +26,21 @@ async function main() {
     console.log("Address recipient:", recipient.address);
 
     // Adjuntar contrato desplegado
-    const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+    const contractAddress = "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6";
     const myNFT = await hre.ethers.getContractAt("MyNFT", contractAddress);
     console.log("Contrato NFT adjuntado en:", contractAddress);
-    console.log(myNFT.interface.fragments);
-
+    
     // Mint NFT a owner
-    const tokenURI = "https://my-json-server.typicode.com/example/metadata/1";
+    const tokenURI = "ipfs://token-uri";
     const mintTx = await myNFT.mint(tokenURI);
     await mintTx.wait();
     console.log(`NFT minteado con token URI: ${tokenURI}`);
+    console.log(`Dirección del contrato MyNFT: ${myNFT.target}`);
 
 
     // Ver balance del dueño
-    const balance = await myNFT.balanceOf(owner.address);
-    console.log(`Balance de ${owner.address}: ${balance.toString()}`);
+    const balanceAfterMind = await myNFT.balanceOf(owner.address);
+    console.log(`Balance despues del mind: ${balanceAfterMind.toString()}`);
 
     // Obtener un NFT válido del owner
     const tokenId = await getValidTokenId(myNFT, owner);
