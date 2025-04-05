@@ -9,6 +9,7 @@ async function main() {
     await myNFT.waitForDeployment();
 
     console.log("MyNFT deployed to:", myNFT.target);
+    const deploymentsDir = Path.join(__dirname,"../deploments");
 }
 
 main().catch((error) => {
