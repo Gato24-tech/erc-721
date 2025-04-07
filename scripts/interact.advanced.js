@@ -1,6 +1,8 @@
 const hre = require("hardhat");
-
-async function getValidTokenId(contract, owner) {
+const path = require("path");
+const fs = require("fs");
+    
+    async function getValidTokenId(contract, owner) {
     const balance = await contract.balanceOf(owner);
     if (balance == 0) {
         throw new Error(`El dueño ${owner.address} no tiene NFTs.`);
@@ -26,9 +28,11 @@ async function main() {
     console.log("Address recipient:", recipient.address);
 
     // Adjuntar contrato desplegado
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const myNFT = await hre.ethers.getContractAt("MyNFT", contractAddress);
-    console.log("Contrato NFT adjuntado en:", contractAddress);
+    const deploymentsDir = path.join(__dirname, "../deployments");
+    const contractJson = fs.readFileSync(path.join(deploymentsDir, "MyDeploy.json"), "utf-8");
+    const contractAddress = JSON.parse(contractJson).address;
+    const MyNFT = await hre.ethers.getContractFactory("MyNFT");
+    const myNFT = await MyNFT.attach(contractAddress);
     
     // Mint NFT a owner
     const tokenURI = "ipfs://token-uri";

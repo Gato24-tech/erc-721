@@ -15,10 +15,10 @@ async function main() {
     const contractAddress = await myNFT.getAddress();
 
     console.log("MyNFT deployed to:", contractAddress);
-    const deploymentsDir = Path.join(__dirname,"../deploments"); 
+    const deploymentsDir = path.join(__dirname,"../deployments"); 
 
     if (!fs.existsSync(deploymentsDir)) {
-       fs.mkdirSync(deploymentsDir);
+        fs.mkdirSync(deploymentsDir); 
     }
 
         // Guardar la dirección en formato JSON
@@ -29,8 +29,8 @@ async function main() {
         };
 
     fs.writeFileSync(
-        path.join(deploymentsDir,"MyDeploy.js"),
-        JSON.stringify({address: contractAddress}, null, 2)
+        path.join(deploymentsDir,"MyDeploy.json"),
+        JSON.stringify({address: await myNFT.getAddress()}, null, 2)
         
     );
 
