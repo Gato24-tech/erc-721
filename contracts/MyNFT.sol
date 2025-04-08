@@ -13,10 +13,16 @@ contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     string public baseURI; // URI base para construir URIs dinámicas
     mapping(uint256 => bool) public lockedTokens; // Tokens bloqueados para transferencia
 
-    constructor(string memory _baseURI, uint256 _maxSupply) ERC721("MyNFT", "MNFT") {
-        baseURI = _baseURI; // Asigna URI base al desplegar
+    constructor(string memory _baseUri, uint256 _maxSupply) ERC721("MyNFT", "MNFT") {
+        baseURI = _baseUri; // Asigna URI base al desplegar
         maxSupply = _maxSupply; // Define el máximo de tokens
     }
+
+    // Obligatorio override porque heredamos múltiples contratos con _burn()
+    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+        super._burn(tokenId);
+    }
+    
 
     // 🧩 MINT: solo el owner puede mintear y si el contrato no está pausado
     function mint() public onlyOwner whenNotPaused {
