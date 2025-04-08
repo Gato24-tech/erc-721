@@ -1,8 +1,9 @@
 const hre = require("hardhat");
 const path = require("path");
 const fs = require("fs");
-    
-    async function getValidTokenId(contract, owner) {
+
+// 🔎 Función para encontrar un tokenId válido que pertenezca al owner
+async function getValidTokenId(contract, owner) {
     const balance = await contract.balanceOf(owner);
     if (balance == 0) {
         throw new Error(`El dueño ${owner.address} no tiene NFTs.`);
@@ -15,65 +16,67 @@ const fs = require("fs");
                 return tokenId;
             }
         } catch (error) {
-            // Ignorar errores (posibles tokenId inexistentes)
+            // Ignorar errores por tokenId inexistentes
         }
     }
 
     throw new Error(`No se encontró un NFT válido para ${owner.address}`);
 }
 
-async function main() { 
+async function main() {
+    // 🧾 Obtener cuentas del entorno local (Hardhat)
     const [owner, recipient] = await hre.ethers.getSigners();
-    console.log("Address owner:", owner.address);
-    console.log("Address recipient:", recipient.address);
+    console.log("✅ Address owner:", owner.address);
+    console.log("✅ Address recipient:", recipient.address);
 
-    // Adjuntar contrato desplegado
+    // 📁 Leer dirección del contrato desde el JSON generado al hacer deploy
     const deploymentsDir = path.join(__dirname, "../deployments");
     const contractJson = fs.readFileSync(path.join(deploymentsDir, "MyDeploy.json"), "utf-8");
     const contractAddress = JSON.parse(contractJson).address;
+
+    // 🔗 Obtener y conectar el contrato desplegado
     const MyNFT = await hre.ethers.getContractFactory("MyNFT");
     const myNFT = await MyNFT.attach(contractAddress);
-    
-    // Mint NFT a owner
-    const tokenURI = "ipfs://token-uri";
-    const mintTx = await myNFT.mint(tokenURI);
+
+    // 🪄 Mint de NFT sin parámetros (URI dinámica dentro del contrato)
+    const mintTx = await myNFT.mint();
     await mintTx.wait();
-    console.log(`NFT minteado con token URI: ${tokenURI}`);
-    console.log(`Dirección del contrato MyNFT: ${myNFT.target}`);
+    console.log("✅ NFT minteado correctamente.");
+    console.log(`📌 Dirección del contrato MyNFT: ${myNFT.target}`);
 
+    // 📦 Ver balance del owner
+    const balance = await myNFT.balanceOf(owner.address);
+    console.log(`📊 Balance del owner después del mint: ${balance.toString()}`);
 
-    // Ver balance del dueño
-    const balanceAfterMind = await myNFT.balanceOf(owner.address);
-    console.log(`Balance despues del mind: ${balanceAfterMind.toString()}`);
-
-    // Obtener un NFT válido del owner
+    // 🔍 Obtener un tokenId válido del owner
     const tokenId = await getValidTokenId(myNFT, owner);
-    console.log(`Usando el NFT con ID ${tokenId}`);
+    console.log(`🆔 Usando el NFT con ID: ${tokenId}`);
 
-    // Verificar el dueño real del NFT
+    // 👁️ Verificar el dueño actual del tokenId
     const currentOwner = await myNFT.ownerOf(tokenId);
-    console.log(`El dueño del NFT con ID ${tokenId} es:`, currentOwner);
+    console.log(`👤 El dueño actual del token ID ${tokenId} es: ${currentOwner}`);
 
-    // Asegurar que el owner realmente tiene el NFT antes de aprobar
+    // 🔐 Confirmar que el dueño actual es el owner antes de aprobar
     if (currentOwner.toLowerCase() !== owner.address.toLowerCase()) {
-        throw new Error(`El owner actual (${currentOwner}) no es el dueño del NFT ${tokenId}`);
+        throw new Error(`❌ El owner actual (${currentOwner}) no es el dueño del NFT ${tokenId}`);
     }
 
-    // Aprobar transferencia
+    // ✅ Aprobar la transferencia del tokenId al recipient
     await myNFT.approve(recipient.address, tokenId);
-    console.log(`Aprobado el NFT con ID ${tokenId} para:`, recipient.address);
+    console.log(`🔑 NFT con ID ${tokenId} aprobado para: ${recipient.address}`);
 
-    // Transferir después de aprobar
+    // 🚚 Transferir NFT desde owner hacia recipient
     const transferTx = await myNFT.transferFrom(owner.address, recipient.address, tokenId);
     await transferTx.wait();
-    console.log(`Transferido el NFT con ID ${tokenId} a:`, recipient.address);
+    console.log(`📤 NFT con ID ${tokenId} transferido a: ${recipient.address}`);
 
-    // Verificar nuevo dueño
+    // 👥 Verificar nuevo dueño del token
     const newOwner = await myNFT.ownerOf(tokenId);
-    console.log(`El nuevo dueño del NFT con ID ${tokenId} es:`, newOwner);
+    console.log(`✅ El nuevo dueño del NFT con ID ${tokenId} es: ${newOwner}`);
 }
 
+// 🛠️ Ejecutar main y capturar errores
 main().catch((error) => {
-    console.error(error);
+    console.error("❌ Error:", error);
     process.exit(1);
 });

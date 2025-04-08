@@ -8,9 +8,14 @@ async function main() {
     const [deployer] = await hre.ethers.getSigners();
     console.log("Deploying contract with address:", deployer.address);
 
+    const baseUri = "https://my-nft-base-uri.com/metadata/";
+    const maxSupply = 100; // Esta cantidad la podemos cambiar.
+
     const MyNFT = await hre.ethers.getContractFactory("MyNFT");
-    const myNFT = await MyNFT.deploy(10); // Por ejemplo, máximo de 10 NFTs
+    const myNFT = await MyNFT.deploy(baseUri, maxSupply); 
     await myNFT.waitForDeployment();
+
+    console.log("contract deployed to:", myNFT.getAddress);
 
     const contractAddress = await myNFT.getAddress();
 
