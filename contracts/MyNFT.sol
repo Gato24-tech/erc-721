@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+import "@openzeppelin/contracts/utils/Counters.sol"; 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
@@ -9,32 +10,49 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     uint256 public maxSupply; // Límite de NFTs que se pueden mintear
-    uint256 private _tokenIdCounter; // Contador interno para IDs únicos
     string public baseURI; // URI base para construir URIs dinámicas
     mapping(uint256 => bool) public lockedTokens; // Tokens bloqueados para transferencia
+    uint256 public nftPrice = 0.01 ether; // Precio por NFT configurable por el owner
+    using Counters for Counters.Counter; // Habilita funciones tipo objeto en el struct
+    Counters.Counter private _tokenIdCounter; // Define el contador real
+
+
 
     constructor(string memory _baseUri, uint256 _maxSupply) ERC721("MyNFT", "MNFT") {
         baseURI = _baseUri; // Asigna URI base al desplegar
         maxSupply = _maxSupply; // Define el máximo de tokens
     }
 
+    function mintWithPayment() external payable whenNotPaused {
+    require(msg.value >= nftPrice, "No has enviado suficiente ETH");
+    // Asegura que el comprador ha enviado suficiente ether
+
+    require(_tokenIdCounter.current() < maxSupply, "Max supply reached");
+    // Asegura que no se supere el límite de NFTs
+    
+    _tokenIdCounter.increment(); // Aumenta el contador para nuevo token
+    uint256 newItemId = _tokenIdCounter.current(); // Obtiene el nuevo ID
+    _safeMint(msg.sender, newItemId); // Mintea el NFT al comprador
+}
+
+
     // Obligatorio override porque heredamos múltiples contratos con _burn()
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);
     }
     
+         // 🧩 MINT: solo el owner puede mintear y si el contrato no está pausado
+   function mint() public onlyOwner whenNotPaused {
+    require(_tokenIdCounter.current() < maxSupply, "Max supply reached");
 
-    // 🧩 MINT: solo el owner puede mintear y si el contrato no está pausado
-    function mint() public onlyOwner whenNotPaused {
-        require(_tokenIdCounter < maxSupply, "Max supply reached");
-        _tokenIdCounter++;
-        uint256 tokenId = _tokenIdCounter;
+    _tokenIdCounter.increment(); // incrementa correctamente
+    uint256 tokenId = _tokenIdCounter.current(); // obtiene el nuevo ID
 
-        _safeMint(msg.sender, tokenId); // Mintea al owner
+    _safeMint(msg.sender, tokenId); // mintea al owner
 
-        string memory newURI = string(abi.encodePacked(baseURI, uint2str(tokenId))); // URI dinámica
-        _setTokenURI(tokenId, newURI);
-    }
+    string memory newURI = string(abi.encodePacked(baseURI, uint2str(tokenId))); // URI dinámica
+    _setTokenURI(tokenId, newURI);
+}
 
     // 🔒 Bloquea el token para evitar transferencias
     function lockToken(uint256 tokenId) external onlyOwner {
