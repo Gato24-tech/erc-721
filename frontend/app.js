@@ -27,7 +27,6 @@ connectBtn.onclick = async () => {
 mintBtn.onclick = async () => {
   if (!contract) return alert("Primero conecta MetaMask.");
   statusP.innerText = "⏳ Mint en proceso...";
-}
 
   try {
     const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
@@ -37,7 +36,7 @@ mintBtn.onclick = async () => {
     console.error(err);
     statusP.innerText = "❌ Error en el mint.";
   }
-
+};
   async function checkBalance() {
 
     if (!window.ethereum || !contract) {
@@ -58,4 +57,4 @@ mintBtn.onclick = async () => {
         "No se pudo obtener el númeto de NFTs.";
     }
       
-   };
+   }
