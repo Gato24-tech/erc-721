@@ -7,6 +7,11 @@
 <body>
   <h1>🚀 Mint tu NFT</h1>
   <button id="connect">Conectar MetaMask</button>
+  <button onclick="checkBalance()">Ver cuántos NFTs tengo</button>
+  <button onclick="getMyTokens()">Ver mis tokensIds</button>
+  <button onclick="showTokenImage()">Mostrar la imagen de mi NFT</button>
+
+  <div id="nft-info"></div>
   <p id="wallet"></p>
 
   <button id="mint">Mintear NFT (0.01 ETH)</button>
