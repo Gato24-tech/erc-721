@@ -27,6 +27,7 @@ connectBtn.onclick = async () => {
 mintBtn.onclick = async () => {
   if (!contract) return alert("Primero conecta MetaMask.");
   statusP.innerText = "⏳ Mint en proceso...";
+}
 
   try {
     const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
@@ -36,4 +37,25 @@ mintBtn.onclick = async () => {
     console.error(err);
     statusP.innerText = "❌ Error en el mint.";
   }
-};
+
+  async function checkBalance() {
+
+    if (!window.ethereum || !contract) {
+      alert("Por favor, conecta primero Metamask.");
+      return;
+    }
+
+    const accounts = await ethereum.request({ method: "eth_requestAccounts"});
+    const userAddress = accounts[0];
+
+    try {
+      const balance = await contract.balanceOf(userAddress);
+      document.getElementById("nft-info").innerText =
+      `Tienes ${balance.toString()} NFT(s) en tu cuenta.`;
+    }catch (err) {
+      console.error("Error al obtener el balance:", err);
+      document.getElementById("nft-info").innerText =
+        "No se pudo obtener el númeto de NFTs.";
+    }
+      
+   };
