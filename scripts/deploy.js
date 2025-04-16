@@ -1,5 +1,5 @@
 const hre = require("hardhat");
-const Path = require("path");
+const path = require("path");
 const fs = require("fs");
 
 
@@ -18,18 +18,20 @@ async function main() {
     console.log("contract deployed to:", contractAddress);
     
     // Defino la ruta para guardar el archivo JSON
-    const frontendPath = path.join(__dirname,"..", "forntend", "MyDeploy.json");
+    const frontendPath = path.join(__dirname,"..", "frontend", "MyDeploy.json");
 
     // Creo los datos a guardar
     const data = {
         address: contractAddress,
         network: hre.network.name,
         timestamp: new Date().toISOString()
+
     };
-    
+       
     // Escribo el archivo
     fs.writeFileSync(frontendPath, JSON.stringify(data, null,2));
     console.log("Dirección guardada en frontend/MyDeploy.json");
+
 }     
     
 main().catch((error) => {
