@@ -6,6 +6,18 @@ const mintBtn = document.getElementById("mint");
 const walletP = document.getElementById("wallet");
 const statusP = document.getElementById("status");
 
+// Carga dinámica desde MyDeploy.json
+fetch('MyDeploy.json')
+  .then(response => response.json())
+  .then(data => {
+    const contractAddress = data.address;
+    console.log("Dirección del contrato:", contractAddress);
+
+    const contract = new web3.eth.Contract(abi, contractAddress);
+    
+  });
+
+
 // Conectar Metamask
 connectBtn.onclick = async () => {
   if (!window.ethereum) return alert("Instala MetaMask, por favor.");
