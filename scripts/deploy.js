@@ -1,7 +1,6 @@
 const hre = require("hardhat");
 const Path = require("path");
 const fs = require("fs");
-const path = require("path");
 
 
 async function main() {
@@ -15,35 +14,25 @@ async function main() {
     const myNFT = await MyNFT.deploy(baseUri, maxSupply); 
     await myNFT.waitForDeployment();
 
-    console.log("contract deployed to:", myNFT.getAddress);
-
     const contractAddress = await myNFT.getAddress();
+    console.log("contract deployed to:", contractAddress);
+    
+    // Defino la ruta para guardar el archivo JSON
+    const frontendPath = path.join(__dirname,"..", "forntend", "MyDeploy.json");
 
-    console.log("MyNFT deployed to:", contractAddress);
-    const deploymentsDir = path.join(__dirname,"../deployments"); 
-
-    if (!fs.existsSync(deploymentsDir)) {
-        fs.mkdirSync(deploymentsDir); 
-    }
-
-        // Guardar la dirección en formato JSON
-        const data = {
-            address: contractAddress,
-            network: hre.network.name,
-            timestamp: new Date().toISOString()
-        };
-
-    fs.writeFileSync(
-        path.join(deploymentsDir,"MyDeploy.json"),
-        JSON.stringify({address: await myNFT.getAddress()}, null, 2)
-        
-    );
-
-    console.log("Dirección guardada en deployments/MyDeploy.json");
-
-}
-
+    // Creo los datos a guardar
+    const data = {
+        address: contractAddress,
+        network: hre.network.name,
+        timestamp: new Date().toISOString()
+    };
+    
+    // Escribo el archivo
+    fs.writeFileSync(frontendPath, JSON.stringify(data, null,2));
+    console.log("Dirección guardada en frontend/MyDeploy.json");
+}     
+    
 main().catch((error) => {
-    console.error(error);
+    console.error("Error al desplegar:", error);
     process.exitCode = 1;
 });
