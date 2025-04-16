@@ -1,4 +1,5 @@
 let signer;
+let contract; // Ahora sí es global
 let contractAddress;
 
 const connectBtn = document.getElementById("connect");
@@ -6,40 +7,39 @@ const mintBtn = document.getElementById("mint");
 const walletP = document.getElementById("wallet");
 const statusP = document.getElementById("status");
 
-// Carga dinámica desde MyDeploy.json
-fetch('MyDeploy.json')
-  .then(response => response.json())
-  .then(data => {
-    const contractAddress = data.address;
-    console.log("Dirección del contrato:", contractAddress);
+// Cargar contrato al iniciar
+async function loadContract() {
+  const resAbi = await fetch("abi.json");
+  const abiJson = await resAbi.json();
+  const abi = abiJson.abi;
 
-    const contract = new web3.eth.Contract(abi, contractAddress);
-    
-  });
+  const resAddr = await fetch("MyDeploy.json");
+  const addrJson = await resAddr.json();
+  contractAddress = addrJson.address;
+  console.log("📡 Dirección del contrato cargada:", contractAddress);
 
+  if (window.ethereum) {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    signer = await provider.getSigner();
+    contract = new ethers.Contract(contractAddress, abi, signer);
+  } else {
+    alert("Instala MetaMask para continuar");
+  }
+}
 
-// Conectar Metamask
+window.onload = async () => {
+  await loadContract();
+};
+
+// Conectar wallet
 connectBtn.onclick = async () => {
-  if (!window.ethereum) return alert("Instala MetaMask, por favor.");
-
   const provider = new ethers.BrowserProvider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   signer = await provider.getSigner();
   walletP.innerText = `🔗 Conectado como: ${await signer.getAddress()}`;
-
-  const res = await fetch("abi.json");
-  const abiJson = await res.json();
-  const abi = abiJson.abi;
 };
 
-async function loadContractAddress() {
-  const res = await fetch("MyDeploy.json");
-  const data = await res.json();
-  contractAddress = data.address;
-  console.log("📡 Dirección del contrato cargada:", contractAddress);
-}
-
-// Botón para mintear NFT
+// Mint
 mintBtn.onclick = async () => {
   if (!contract) return alert("Primero conecta MetaMask.");
   statusP.innerText = "⏳ Mint en proceso...";
@@ -53,47 +53,3 @@ mintBtn.onclick = async () => {
     statusP.innerText = "❌ Error en el mint.";
   }
 };
-
-// Mostrar número de NFTs y sus imágenes (si es posible)
-async function mostrarNFTs() {
-  if (!window.ethereum || !contract) {
-    alert("Por favor, conecta primero Metamask.");
-    return;
-  }
-
-  const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-  const userAddress = accounts[0];
-
-  try {
-    const balance = await contract.balanceOf(userAddress);
-    document.getElementById("nft-info").innerText =
-      `Tienes ${balance.toString()} NFT(s) en tu cuenta.`;
-
-    const idsContainer = document.getElementById("nft-ids");
-    idsContainer.innerHTML = "";
-    const gallery = document.getElementById("nft-gallery");
-    gallery.innerHTML = "";
-
-    for (let i = 0; i < balance; i++) {
-      const tokenId = await contract.tokenOfOwnerByIndex(userAddress, i); // SOLO funciona si usas ERC721Enumerable
-      const uri = await contract.tokenURI(tokenId);
-      const res = await fetch(uri);
-      const metadata = await res.json();
-
-      const li = document.createElement("li");
-      li.innerText = `Token ID: ${tokenId}`;
-      idsContainer.appendChild(li);
-
-      const img = document.createElement("img");
-      img.src = metadata.image;
-      img.alt = metadata.name;
-      img.style.width = "200px";
-      img.style.margin = "10px";
-      gallery.appendChild(img);
-    }
-  } catch (err) {
-    console.error("Error mostrando NFTs:", err);
-    document.getElementById("nft-info").innerText =
-      "Error mostrando tus NFTs. ¿Tienes ERC721Enumerable?";
-  }
-}
