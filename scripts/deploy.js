@@ -4,6 +4,7 @@ const fs = require("fs");
 
 
 async function main() {
+   
     const [deployer] = await hre.ethers.getSigners();
     console.log("Deploying contract with address:", deployer.address);
 
