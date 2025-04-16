@@ -1,41 +1,32 @@
 const hre = require("hardhat");
-const path = require("path");
 const fs = require("fs");
-
+const path = require("path");
 
 async function main() {
-   
-    const [deployer] = await hre.ethers.getSigners();
-    console.log("Deploying contract with address:", deployer.address);
+  console.log("Red activa:", hre.network.name);
 
-    const baseUri = "https://my-nft-base-uri.com/metadata/";
-    const maxSupply = 100; // Esta cantidad la podemos cambiar.
+  const accounts = await hre.ethers.getSigners();
+  console.log("Accounts disponibles:", accounts.map(a => a.address));
 
-    const MyNFT = await hre.ethers.getContractFactory("MyNFT");
-    const myNFT = await MyNFT.deploy(baseUri, maxSupply); 
-    await myNFT.waitForDeployment();
+  if (!accounts.length) {
+    throw new Error("No hay cuentas disponibles. ¿Está bien configurada la PRIVATE_KEY?");
+  }
 
-    const contractAddress = await myNFT.getAddress();
-    console.log("contract deployed to:", contractAddress);
-    
-    // Defino la ruta para guardar el archivo JSON
-    const frontendPath = path.join(__dirname,"..", "frontend", "MyDeploy.json");
+  const Contract = await hre.ethers.getContractFactory("MyNFT");
+  const contract = await Contract.deploy();
 
-    // Creo los datos a guardar
-    const data = {
-        address: contractAddress,
-        network: hre.network.name,
-        timestamp: new Date().toISOString()
+  await contract.waitForDeployment();
 
-    };
-       
-    // Escribo el archivo
-    fs.writeFileSync(frontendPath, JSON.stringify(data, null,2));
-    console.log("Dirección guardada en frontend/MyDeploy.json");
+  const address = await contract.getAddress();
+  console.log("✅ Contrato desplegado en:", address);
 
-}     
-    
+  // Guardar en frontend/MyDeploy.json
+  const output = { address };
+  fs.writeFileSync("frontend/MyDeploy.json", JSON.stringify(output, null, 2));
+  console.log("📁 Dirección guardada en frontend/MyDeploy.json");
+}
+
 main().catch((error) => {
-    console.error("Error al desplegar:", error);
-    process.exitCode = 1;
+  console.error("Error al desplegar:", error);
+  process.exit(1);
 });
