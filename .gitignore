@@ -20,7 +20,7 @@ ignition/deployments/chain-31337
 
 # .env
 .env
-ALCHEMY_API_KEY=:https://arb-sepolia.g.alchemy.com/v2/_jTFrZsqGiY4oS6En8q_72YdsMEOk-78
+ALCHEMY_API_KEY=https://arb-sepolia.g.alchemy.com/v2/_jTFrZsqGiY4oS6En8q_72YdsMEOk-78
 PRIVATE_KEY=22a6db3558e0b9d28f55b58353423e33b52b67f42bd4c64873d24e4f8b15fff7
 ARBISCAN_API_KEY=CA88SUDWES4SCRA8KTBGTWDHV4W4NHKQ23
  
