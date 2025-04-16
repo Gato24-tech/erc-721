@@ -1,5 +1,5 @@
 let signer;
-let contract;
+let contractAddress;
 
 const connectBtn = document.getElementById("connect");
 const mintBtn = document.getElementById("mint");
@@ -18,10 +18,14 @@ connectBtn.onclick = async () => {
   const res = await fetch("abi.json");
   const abiJson = await res.json();
   const abi = abiJson.abi;
-
-  const contractAddress = "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266"; // cambia por la dirección real
-  contract = new ethers.Contract(contractAddress, abi, signer);
 };
+
+async function loadContractAddress() {
+  const res = await fetch("MyDeploy.json");
+  const data = await res.json();
+  contractAddress = data.address;
+  console.log("📡 Dirección del contrato cargada:", contractAddress);
+}
 
 // Botón para mintear NFT
 mintBtn.onclick = async () => {
