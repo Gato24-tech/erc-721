@@ -20,7 +20,7 @@ ignition/deployments/chain-31337
 
 # .env
 .env
-ALCHEMY_API_KEY=https://eth-mainnet.g.alchemy.com/v2/BrsEnnwp4V1kUKIcx0nZ6UZBk1WhaMWs
+ALCHEMY_API_KEY=BrsEnnwp4V1kUKIcx0nZ6UZBk1WhaMWs
 PRIVATE_KEY=9027133ef88428afe11f24ce1d0f1df7faaace8420905f14bd1d89c1511cceb8
 ARBISCAN_API_KEY=CA88SUDWES4SCRA8KTBGTWDHV4W4NHKQ23
  
