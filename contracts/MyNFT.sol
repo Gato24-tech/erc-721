@@ -35,7 +35,24 @@ contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     _safeMint(msg.sender, newItemId); // Mintea el NFT al comprador
 }
 
+    function tokenOfOwner(address _owner) public view returns (uint256[] memory) {
+        uint256 count = balanceOf(_owner);
+        uint256[] memory tokens = new uint256[](count);
+        uint256 found = 0;
+        for (uint256 i = 1; i <= maxSupply; i++) {
+            if (_exists(i) && ownerOf(i) ==_owner) {
+                tokens[found] = i;
+                found++;
+                if (found == count) {
+                    break;
+                }
+            }
+        }
+        return tokens;
+    }
 
+
+ 
     // Obligatorio override porque heredamos múltiples contratos con _burn()
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
         super._burn(tokenId);

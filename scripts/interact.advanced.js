@@ -42,8 +42,8 @@ async function main() {
     console.log("✅ Address owner:", owner.address);
     console.log("✅ Address recipient:", recipient.address);
 
-    const deploymentsDir = path.join(__dirname, "../deployments");
-    const contractJson = fs.readFileSync(path.join(deploymentsDir, "MyDeploy.json"), "utf-8");
+    const deploymentsDir = path.join(__dirname, "../frontend");
+    const contractJson = fs.readFileSync(path.join("MyDeploy.json"), "utf-8");
     const contractAddress = JSON.parse(contractJson).address;
 
     const MyNFT = await hre.ethers.getContractFactory("MyNFT");
