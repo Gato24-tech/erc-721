@@ -40,6 +40,18 @@ connectBtn.onclick = async () => {
   signer = await provider.getSigner();
    const address = await signer.getAddress();
   walletP.innerText = `🔗 Connected as: ${address}`;
+  // Cargamos el ABI y la dirección del contrato
+  const resAbi = await fetch("abi.json");
+  const abiJson = await resAbi.json();
+  const abi = abiJson.abi;
+
+  const resAddr = await fetch("MyDeploy.json");
+  const addrJson = await resAddr.json();
+  contractAddress = addrJson.address;
+
+  // Creamos el contrato con el nuevo signer
+  contract = new ethers.Contract(contractAddress, abi, signer);
+  console.log("Contrato reconfigurado tras conectar con MetaMask");
 } catch (err){ 
   console.error("Wallet connection error:", err);
   walletP.innetText = "Error al conectar wallet.";
@@ -125,6 +137,7 @@ async function showTokenImage() {
      
     if (foundTokenId !== null) {
       const tokenURI = await contract.tokenURI(foundTokenId);
+      console.log("tokenURI:", tokenURI);
       const response = await fetch(tokenURI);
       const metadata = await response.json();
       const imageUrl = metadata.image;
