@@ -99,7 +99,7 @@ async function getMyTokens() {
   statusP.innerText = "⏳ Minting in progres...";
 
   try {
-    const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
+    const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.0001") });
     await tx.wait();
     statusP.innerText = "✅ NFT minted successfully!";
     console.log("Transaction hash:", tx.hash);
