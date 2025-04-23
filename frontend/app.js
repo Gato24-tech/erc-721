@@ -34,18 +34,17 @@ async function loadContract() {
  let userAccount = null;
 // Conectar wallet
 connectBtn.onclick = async () => {
-
   try {
   const provider = new ethers.BrowserProvider(window.ethereum);
-  await provider.send("eth_requestAccouns", []);
+  await provider.send("eth_requestAccounts", []);
   signer = await provider.getSigner();
-  userAccount = await signer.getAddress();
-  const address = await signer.getAddress();
-  walletP.innerText = `🔗 Connected as: ${userAccount}`;
+   const address = await signer.getAddress();
+  walletP.innerText = `🔗 Connected as: ${address}`;
 } catch (err){ 
   console.error("Wallet connection error:", err);
+  walletP.innetText = "Error al conectar wallet.";
 }
-}
+};
 
 async function checkBalance() {
   if (!contract || !signer) {
@@ -53,9 +52,9 @@ async function checkBalance() {
   }
 
   try {
-    const userAddres = await signer.getAddress();
+    const userAddress = await signer.getAddress();
     const balance = await contract.balanceOf(userAddress);
-    document.getElementById("NFT-info").innerText = `Tienes ${balance.toString()} NFT(s)`;
+    document.getElementById("nft-info").innerText = `Tienes ${balance.toString()} NFT(s)`;
   } catch (error) {
     console.error("Error al consultar el balance:",error);
     document.getElementById("nft-info").innerText = "Error al obetener el balance.";
@@ -89,10 +88,7 @@ async function getMyTokens() {
     document.getElementById("nft-info").innerText = "Error al obtener tus tokens.";
   }
 }
-
-
-
-  
+ 
   // Mint
   mintBtn.onclick = async () => {
   if (!contract) return alert("Connect MetaMask first.");
@@ -146,16 +142,7 @@ async function showTokenImage() {
     document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
   }
 
-  if (ownedTokenId !== null) {
-    const tokenURI = await contract.tokenURI(ownedTokenId);
-    const response = await fetch(tokenURI);
-    const metadata = await response.json();
-    const imageUrl = metadata.image;
-    document.getElementById(`nftImage`).src = imageUrl;
-  } else {
-    console.log(`No tienes ningún NFT`);
-  }
-}
    window.onload = async () => {
    await loadContract();
-};
+}
+}
