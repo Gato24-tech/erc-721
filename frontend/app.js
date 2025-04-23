@@ -30,15 +30,18 @@ async function loadContract() {
   console.error("Error loading contract:", error);
 }
 }
+
+ let userAccount = null;
 // Conectar wallet
 connectBtn.onclick = async () => {
 
   try {
   const provider = new ethers.BrowserProvider(window.ethereum);
-  await provider.send("eth_requestAccounts", []);
+  await provider.send("eth_requestAccouns", []);
   signer = await provider.getSigner();
+  userAccount = await signer.getAddress();
   const address = await signer.getAddress();
-  walletP.innerText = `🔗 Connected as: ${address}`;
+  walletP.innerText = `🔗 Connected as: ${userAccount}`;
 } catch (err){ 
   console.error("Wallet connection error:", err);
 }
@@ -114,7 +117,7 @@ async function showTokenImage() {
       document.getElementById("nft-info").innerHTML = `
       <strong>Token ID:</strong> ${foundTokenId}<br>
       <img src="${ imageUrl}" alt="NFT Image" style="max.width: 300px; margin-top: 10px;" />
-      <img id="nftImage" src="" alt="Tu NFT aparecerá aquí" />`;
+      `;
 
     } else {
       document.getElementById("nft-info").innerText = "You don't own any NFT yet.";
@@ -122,28 +125,6 @@ async function showTokenImage() {
   } catch (error) {
     console.error("Error displaying NFT image:", error);
     document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
-  }
-
-window.onload = async () => {
-  await loadContract();
-};
-
-async function loadMyNFTImage() {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.get.signer();
-  const userAddres = await signer.getAddress();
-
-  const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
-  const maxSupply = await contract.maxSupply();
-  let ownedTokenId = null;
-
-  for (let tokenId = 0; tokenId < maxSupply; tokenId++) {
-    const owner = await contract.ownerOf(tokenId).catch(() => null);
-    if (owner && owner.toLowerCase() === userAddres.toLowerCase()) {
-      ownedTokenId = tokenId;
-      break;
-    }
   }
 
   if (ownedTokenId !== null) {
@@ -157,10 +138,9 @@ async function loadMyNFTImage() {
   }
 }
 
-}
   
   // Mint
-mintBtn.onclick = async () => {
+  mintBtn.onclick = async () => {
   if (!contract) return alert("Connect MetaMask first.");
   statusP.innerText = "⏳ Minting in progres...";
 
@@ -174,3 +154,6 @@ mintBtn.onclick = async () => {
     statusP.innerText = "❌ Error while minting.";
   }
 }
+   window.onload = async () => {
+   await loadContract();
+};
