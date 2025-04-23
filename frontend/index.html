@@ -6,27 +6,19 @@
 </head>
 <body>
   <h1>🚀 Mint tu NFT</h1>
+
   <button id="connect">Conectar MetaMask</button>
-  <p id="wallet">. No conectado</p>
+  <p id="wallet">No conectado</p>
 
-  <hr />
-
-  <button onclick="checkBalance()">Ver cuántos NFTs tengo</button>
-  <button onclick="showTokenImage()">Mostrar la imagen de mi NFT</button>
-  <button onclick="loadMyNFTImage()">Mostrar mi NFT</button>
-  <br /><br />
-  <img id="nftImage" src="" alt="Tu NFT aparecerá aquí" style="max-width: 300px; border: 2px solid #ccc; border-radius: 8px;" />
-
-  <div id="nft-info"></div>
   <hr />
 
   <button id="mint">Mintear NFT (0.01 ETH)</button>
   <p id="status"></p>
 
-  <p id="nft-info"></p>
-  <div id="nft-gallery"></div>
-  <button onclick="mostrarNFTs()">Mostrar mis NFTs</button>
+  <hr />
 
+  <button onclick="showTokenImage()">Mostrar mi NFT</button>
+  <div id="nft-info"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.umd.min.js"></script>
   <script src="app.js"></script>

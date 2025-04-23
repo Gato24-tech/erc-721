@@ -90,6 +90,25 @@ async function getMyTokens() {
   }
 }
 
+
+
+  
+  // Mint
+  mintBtn.onclick = async () => {
+  if (!contract) return alert("Connect MetaMask first.");
+  statusP.innerText = "⏳ Minting in progres...";
+
+  try {
+    const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
+    await tx.wait();
+    statusP.innerText = "✅ NFT minted successfully!";
+    console.log("Transaction hash:", tx.hash);
+    } catch (err) {
+    console.error("Mint error:", err);
+    statusP.innerText = "❌ Error while minting.";
+  }
+}
+
 async function showTokenImage() {
   if (!contract || !signer) {
     return alert("Please connect your wallet first.");
@@ -116,7 +135,7 @@ async function showTokenImage() {
 
       document.getElementById("nft-info").innerHTML = `
       <strong>Token ID:</strong> ${foundTokenId}<br>
-      <img src="${ imageUrl}" alt="NFT Image" style="max.width: 300px; margin-top: 10px;" />
+      <img src="${imageUrl}" alt="NFT Image" style="max-width: 300px; margin-top: 10px;" />
       `;
 
     } else {
@@ -135,23 +154,6 @@ async function showTokenImage() {
     document.getElementById(`nftImage`).src = imageUrl;
   } else {
     console.log(`No tienes ningún NFT`);
-  }
-}
-
-  
-  // Mint
-  mintBtn.onclick = async () => {
-  if (!contract) return alert("Connect MetaMask first.");
-  statusP.innerText = "⏳ Minting in progres...";
-
-  try {
-    const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
-    await tx.wait();
-    statusP.innerText = "✅ NFT minted successfully!";
-    console.log("Transaction hash:", tx.hash);
-  } catch (err) {
-    console.error("Mint error:", err);
-    statusP.innerText = "❌ Error while minting.";
   }
 }
    window.onload = async () => {

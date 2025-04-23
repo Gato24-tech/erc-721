@@ -12,7 +12,7 @@ contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     uint256 public maxSupply; // Límite de NFTs que se pueden mintear
     string public baseURI; // URI base para construir URIs dinámicas
     mapping(uint256 => bool) public lockedTokens; // Tokens bloqueados para transferencia
-    uint256 public nftPrice = 0.01 ether; // Precio por NFT configurable por el owner
+    uint256 public nftPrice = 0.0001 ether; // Precio por NFT configurable por el owner
     using Counters for Counters.Counter; // Habilita funciones tipo objeto en el struct
     Counters.Counter private _tokenIdCounter; // Define el contador real
 
