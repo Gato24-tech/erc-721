@@ -1,5 +1,5 @@
 let signer;
-let contract; // Ahora sí es global
+let contract; 
 let contractAddress;
 
 const connectBtn = document.getElementById("connect");
@@ -9,6 +9,7 @@ const statusP = document.getElementById("status");
 
 // Cargar contrato al iniciar
 async function loadContract() {
+  try {
   const resAbi = await fetch("abi.json");
   const abiJson = await resAbi.json();
   const abi = abiJson.abi;
@@ -16,40 +17,160 @@ async function loadContract() {
   const resAddr = await fetch("MyDeploy.json");
   const addrJson = await resAddr.json();
   contractAddress = addrJson.address;
-  console.log("📡 Dirección del contrato cargada:", contractAddress);
+  console.log("📡 Contract address loaded:", contractAddress);
 
   if (window.ethereum) {
     const provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     contract = new ethers.Contract(contractAddress, abi, signer);
   } else {
-    alert("Instala MetaMask para continuar");
+    alert("Please install Metamask to continue.");
+  }
+} catch (error) {
+  console.error("Error loading contract:", error);
+}
+}
+// Conectar wallet
+connectBtn.onclick = async () => {
+
+  try {
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  signer = await provider.getSigner();
+  const address = await signer.getAddress();
+  walletP.innerText = `🔗 Connected as: ${address}`;
+} catch (err){ 
+  console.error("Wallet connection error:", err);
+}
+}
+
+async function checkBalance() {
+  if (!contract || !signer) {
+    return alert("Primero conecta tu wallet.");
+  }
+
+  try {
+    const userAddres = await signer.getAddress();
+    const balance = await contract.balanceOf(userAddress);
+    document.getElementById("NFT-info").innerText = `Tienes ${balance.toString()} NFT(s)`;
+  } catch (error) {
+    console.error("Error al consultar el balance:",error);
+    document.getElementById("nft-info").innerText = "Error al obetener el balance.";
+  }
+  }
+
+async function getMyTokens() {
+  if (!contract || !signer) {
+    return alert("Primero conecta tu wallet.");
+  } 
+   try {
+    const userAddress = await signer.getAddress();
+    const maxSupply = await contract.maxSupply();
+    const ownedTokens = [];
+
+    for (let tokenId = 0; token < maxSupply; tokenId++) {
+      const owner = await contract.ownerOf(tokenId).catch(() => null);
+      if (owner && owner.toLowerCase() === userAddress.toLowerCase()) {
+        ownedTokens.push(tokenId);
+      }
+    }
+
+    if(ownedTokens.length > 0) {
+      document.getElementById("nft-info").innertext =
+        `Tus token IDs: ${ownedTokens.join(", ")}`;
+    } else {
+      document.getElementById("nft-info").innerText = "No tienes ningún NFT aún.";
+    }
+  }catch (error) {
+    console.error("Error al obtener tus tokens:", error);
+    document.getElementById("nft-info").innerText = "Error al obtener tus tokens.";
   }
 }
+
+async function showTokenImage() {
+  if (!contract || !signer) {
+    return alert("Please connect your wallet first.");
+  }
+
+  try {
+    const userAddress = await signer.getAddress();
+    const maxSupply = await contract.maxSupply();
+    let foundTokenId = null;
+
+    for (let tokenId = 0; tokenId < maxSupply; tokenId++) {
+      const owner = await contract.ownerOf(tokenId).catch(() =>null);
+      if (owner && owner.toLowerCase() === userAddress.toLowerCase()) {
+        foundTokenId = tokenId;
+        break;
+      }
+    }
+     
+    if (foundTokenId !== null) {
+      const tokenURI = await contract.tokenURI(foundTokenId);
+      const response = await fetch(tokenURI);
+      const metadata = await response.json();
+      const imageUrl = metadata.image;
+
+      document.getElementById("nft-info").innerHTML = `
+      <strong>Token ID:</strong> ${foundTokenId}<br>
+      <img src="${ imageUrl}" alt="NFT Image" style="max.width: 300px; margin-top: 10px;" />
+      <img id="nftImage" src="" alt="Tu NFT aparecerá aquí" />`;
+
+    } else {
+      document.getElementById("nft-info").innerText = "You don't own any NFT yet.";
+    }
+  } catch (error) {
+    console.error("Error displaying NFT image:", error);
+    document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
+  }
 
 window.onload = async () => {
   await loadContract();
 };
 
-// Conectar wallet
-connectBtn.onclick = async () => {
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  await provider.send("eth_requestAccounts", []);
-  signer = await provider.getSigner();
-  walletP.innerText = `🔗 Conectado como: ${await signer.getAddress()}`;
-};
+async function loadMyNFTImage() {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.get.signer();
+  const userAddres = await signer.getAddress();
 
-// Mint
+  const contract = new ethers.Contract(contractAddress, contractABI, provider);
+
+  const maxSupply = await contract.maxSupply();
+  let ownedTokenId = null;
+
+  for (let tokenId = 0; tokenId < maxSupply; tokenId++) {
+    const owner = await contract.ownerOf(tokenId).catch(() => null);
+    if (owner && owner.toLowerCase() === userAddres.toLowerCase()) {
+      ownedTokenId = tokenId;
+      break;
+    }
+  }
+
+  if (ownedTokenId !== null) {
+    const tokenURI = await contract.tokenURI(ownedTokenId);
+    const response = await fetch(tokenURI);
+    const metadata = await response.json();
+    const imageUrl = metadata.image;
+    document.getElementById(`nftImage`).src = imageUrl;
+  } else {
+    console.log(`No tienes ningún NFT`);
+  }
+}
+
+}
+  
+  // Mint
 mintBtn.onclick = async () => {
-  if (!contract) return alert("Primero conecta MetaMask.");
-  statusP.innerText = "⏳ Mint en proceso...";
+  if (!contract) return alert("Connect MetaMask first.");
+  statusP.innerText = "⏳ Minting in progres...";
 
   try {
     const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.01") });
     await tx.wait();
-    statusP.innerText = "✅ NFT minteado correctamente!";
+    statusP.innerText = "✅ NFT minted successfully!";
+    console.log("Transaction hash:", tx.hash);
   } catch (err) {
-    console.error(err);
-    statusP.innerText = "❌ Error en el mint.";
+    console.error("Mint error:", err);
+    statusP.innerText = "❌ Error while minting.";
   }
-};
+}
