@@ -101,21 +101,39 @@ async function getMyTokens() {
   }
 }
  
-  // Mint
-  mintBtn.onclick = async () => {
-  if (!contract) return alert("Connect MetaMask first.");
-  statusP.innerText = "⏳ Minting in progres...";
+  //mint NFT con pago y mostrar imagen
 
-  try {
-    const tx = await contract.mintWithPayment({ value: ethers.parseEther("0.0001") });
-    await tx.wait();
-    statusP.innerText = "✅ NFT minted successfully!";
-    console.log("Transaction hash:", tx.hash);
-    } catch (err) {
-    console.error("Mint error:", err);
-    statusP.innerText = "❌ Error while minting.";
+  async function mintNFT() {
+    if (!window.ethereum || !currentAccount) {
+      alert("Por favor, conecta MetaMask primero.");
+      return;
+    }
+
+    try {
+      const mintTX = await contract.methods.mintWhitPayment().send( {
+        from: currentAccount,
+        value: web3.utils.toWei("0.0001", "ether") // El valor exacto que exigimos en el contrato
+      });
+
+      console.log("Transacción", mintTx);
+
+      //Despues del mint, consultamos los tokens que tiene el usuario
+      const ownedTokens = await contract.methods.tokenOfOwner(currentAccount).call();
+      const lastTokenId = ownedTokens[ownedTokens.length - 1]; //el último minteado
+
+      console.log("Último token ID:", lastTokenId);
+
+      const tokenURI = await contract.methods.tokenURi(lastTokenId).call();
+      console.log("tokenURI:", tokenURI);
+      
+      document.getElementById("nft-image").src = tokenURI;
+      document.getElementById("mint-status").textContent = "NFT minteado y cargado";
+
+    } catch (error) {
+      console.error("Error al mintear NFT:", error);
+      document.getElementById("mint.status").textContent = "Error al mintear NFT";
+    }
   }
-}
 
 async function showTokenImage() {
   if (!contract || !signer) {
@@ -140,6 +158,7 @@ async function showTokenImage() {
       console.log("tokenURI:", tokenURI);
       const response = await fetch(tokenURI);
       const metadata = await response.json();
+      console.log("metadataJSON:", metadata);
       const imageUrl = metadata.image;
 
       document.getElementById("nft-info").innerHTML = `
