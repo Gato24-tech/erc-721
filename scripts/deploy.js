@@ -15,7 +15,8 @@ async function main() {
   const Contract = await hre.ethers.getContractFactory("MyNFT");
 
   // Argumentos para el constructor:
-  const baseUri = "https://ipfs.io/ipfs/QmYwAPJzv5CZsnAzt8auVTLJ8HqgYkd1bGvA4RWyW2x7uE/"; // Puedes poner un valor real o provisional
+  const baseUri = "https://gateway.pinata.cloud/ipfs/QmRgAgZ9U5AZEdp3NrbVVWspnb5oEJW9v7UUTqRmWMoEwn/"
+  ; // Puedes poner un valor real o provisional
   const maxSupply = 10;
 
   const contract = await Contract.deploy(baseUri, maxSupply);
