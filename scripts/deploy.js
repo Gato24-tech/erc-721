@@ -15,7 +15,7 @@ async function main() {
   const Contract = await hre.ethers.getContractFactory("MyNFT");
 
   // Argumentos para el constructor:
-  const baseUri = "https://ipfs.io/ipfs/QmWcZ6RG1pH9RQU4UsECRKpRZC4kF8LF8sG9eBoDUJtFaZ/"; // Puedes poner un valor real o provisional
+  const baseUri = "https://ipfs.io/ipfs/QmYwAPJzv5CZsnAzt8auVTLJ8HqgYkd1bGvA4RWyW2x7uE/"; // Puedes poner un valor real o provisional
   const maxSupply = 10;
 
   const contract = await Contract.deploy(baseUri, maxSupply);
