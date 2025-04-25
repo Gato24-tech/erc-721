@@ -24,7 +24,7 @@ async function main() {
   console.log(`✅ NFT deployed to: ${await contract.getAddress()}`);
 
   // Guardar en frontend/MyDeploy.json
-  const output = { address };
+  const output = { address:await contract.getAddress()};
   fs.writeFileSync("frontend/MyDeploy.json", JSON.stringify(output, null, 2));
   console.log("📁 Dirección guardada en frontend/MyDeploy.json");
 }
