@@ -12,18 +12,16 @@ async function main() {
     throw new Error("No hay cuentas disponibles. ¿Está bien configurada la PRIVATE_KEY?");
   }
 
-  const Contract = await hre.ethers.getContractFactory("MyNFT");
-
-  // Argumentos para el constructor:
-  const baseUri = "https://gateway.pinata.cloud/ipfs/QmRgAgZ9U5AZEdp3NrbVVWspnb5oEJW9v7UUTqRmWMoEwn/"
-  ; // Puedes poner un valor real o provisional
+   // Argumentos para el constructor:
+  const baseUri = "https://gateway.pinata.cloud/ipfs/QmRgAgZ9U5AZEdp3NrbVVWspnb5oEJW9v7UUTqRmWMoEwn/"; // Puedes poner un valor real o provisional
   const maxSupply = 10;
+
+  const Contract = await hre.ethers.getContractFactory("MyNFT");
 
   const contract = await Contract.deploy(baseUri, maxSupply);
   await contract.waitForDeployment();
 
-  const address = await contract.getAddress();
-  console.log("✅ Contrato desplegado en:", address);
+  console.log(`✅ NFT deployed to: ${await contract.getAddress()}`);
 
   // Guardar en frontend/MyDeploy.json
   const output = { address };
