@@ -131,36 +131,26 @@ async function checkBalance() {
 }
  
   //mint NFT con pago y mostrar imagen
-
   async function mintNFT() {
-    if (!window.ethereum || !currentAccount) {
+    if (!window.ethereum || !signer) {
       alert("Por favor, conecta MetaMask primero.");
       return;
     }
 
     try {
-      const mintTX = await contract.methods.mintWhitPayment().send( {
-        from: currentAccount,
-        value: web3.utils.toWei("0.0001", "ether") // El valor exacto que exigimos en el contrato
+      const mintTx = await contract.mintWhitPayment({
+        value: ethers.parseEther("0.0001", "ether") // El valor exacto que exigimos en el contrato
       });
 
-      console.log("Transacción", mintTx);
+      console.log("Minteando, espera confirmación...");
+      await mintTx.wait(); //Esperamos a que se confirme la transacción
 
-      //Despues del mint, consultamos los tokens que tiene el usuario
-      const ownedTokens = await contract.methods.tokenOfOwner(currentAccount).call();
-      const lastTokenId = ownedTokens[ownedTokens.length - 1]; //el último minteado
-
-      console.log("Último token ID:", lastTokenId);
-
-      const tokenURI = await contract.methods.tokenURi(lastTokenId).call();
-      console.log("tokenURI:", tokenURI);
-      
-      document.getElementById("nft-image").src = tokenURI;
+      console.log("Minteado con éxito.");
       document.getElementById("mint-status").textContent = "NFT minteado y cargado";
 
     } catch (error) {
       console.error("Error al mintear NFT:", error);
-      document.getElementById("mint.status").textContent = "Error al mintear NFT";
+      document.getElementById("mint-status").textContent = "Error al mintear NFT";
     }
   }
 
