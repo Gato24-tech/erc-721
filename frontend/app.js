@@ -73,7 +73,36 @@ async function checkBalance() {
   }
   }
 
-async function getMyTokens() {
+  async function displayOwnerNFT() {
+    const tokenIds = await contract.methods.tokenOfOwner(currentAccount).call();
+
+    const nftContainer = document.getElementById("nft-container");
+    nftContainer.innerHTML = ""; // Limpiar antes de renderizar
+
+    for (let tokenId of tokenIds) {
+      const tokenUri = await contract.methods.tokenURI(tokenId).call();
+
+      try {
+        const response = await fetch(tokenUri);
+        const metadata = await response.json();
+
+        const nftCard = document.createElement("div");
+        nftCard.className = "nft-card";
+         nftCard.innerHTML = `
+            <img src="${metadata.image}" alt="NFT ${tokenId}" width="200"/>
+            <h3>${metadata.name}"</h3>
+            <p>${metadata.description}</p>
+            <small>ID: ${tokenId}</small>
+         `;
+
+         nftContainer.appendChild(nftCard);
+        }catch (error) {
+         console.error("Error al cargar metadata para tokenId", token, error);
+        }
+      }
+    }
+  
+  async function getMyTokens() {
   if (!contract || !signer) {
     return alert("Primero conecta tu wallet.");
   } 
