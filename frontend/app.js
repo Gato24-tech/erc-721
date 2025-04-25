@@ -38,8 +38,8 @@ connectBtn.onclick = async () => {
   const provider = new ethers.BrowserProvider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   signer = await provider.getSigner();
-   const address = await signer.getAddress();
-  walletP.innerText = `🔗 Connected as: ${address}`;
+  currentAccount = await signer.getAddress();
+  walletP.innerText = `🔗 Connected as: ${currentAccount}`;
   // Cargamos el ABI y la dirección del contrato
   const resAbi = await fetch("abi.json");
   const abiJson = await resAbi.json();
@@ -49,9 +49,7 @@ connectBtn.onclick = async () => {
   const addrJson = await resAddr.json();
   contractAddress = addrJson.address;
 
-  // Creamos el contrato con el nuevo signer
-  contract = new ethers.Contract(contractAddress, abi, signer);
-  console.log("Contrato reconfigurado tras conectar con MetaMask");
+  console.log("Conexion y contrato listos");
 } catch (err){ 
   console.error("Wallet connection error:", err);
   walletP.innetText = "Error al conectar wallet.";
