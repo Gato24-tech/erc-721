@@ -199,6 +199,15 @@ async function showTokenImage() {
     } else {
       document.getElementById("nft-info").innerText = "You don't own any NFT yet.";
     }
+
+  async function getMintedCount() {
+    if (!contract) {
+      alert(`Connect your wallet first.`);
+      return;
+    } 
+    const totalMinted = await contract._tokenIdCounter();
+    alert(`Total NFTs minteados: ${totalMinted}`);
+  }
   } catch (error) {
     console.error("Error displaying NFT image:", error);
     document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
