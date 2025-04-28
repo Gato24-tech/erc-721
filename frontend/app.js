@@ -100,6 +100,19 @@ async function checkBalance() {
       }
     }
   
+  async function checkIfPaused() {
+    if (!contract) {
+      alert(`Connect your wallet first.`);
+      return;
+    }
+  const paused = await contract.paused();
+  if (paused) {
+    alert(`El contrato esta PAUSADO. No se puede mintear.`);
+  } else {
+    alert(`El contrato esta ACTIVO. Puedes mintear`);
+  }
+} 
+  
   async function getMyTokens() {
   if (!contract || !signer) {
     return alert("Primero conecta tu wallet.");
@@ -117,7 +130,7 @@ async function checkBalance() {
     }
 
     if(ownedTokens.length > 0) {
-      document.getElementById("nft-info").innertext =
+      document.getElementById("nft-info").innerText =
         `Tus token IDs: ${ownedTokens.join(", ")}`;
     } else {
       document.getElementById("nft-info").innerText = "No tienes ningún NFT aún.";
@@ -136,7 +149,7 @@ async function checkBalance() {
     }
 
     try {
-      const mintTx = await contract.mintWhitPayment({
+      const mintTx = await contract.mintWhithPayment({
         value: ethers.parseEther("0.0001", "ether") // El valor exacto que exigimos en el contrato
       });
 
