@@ -38,6 +38,7 @@ connectBtn.onclick = async () => {
   const provider = new ethers.BrowserProvider(window.ethereum);
   await provider.send("eth_requestAccounts", []);
   signer = await provider.getSigner();
+  contract = new ethers.Contract(contractAddress, abi, signer);
   currentAccount = await signer.getAddress();
   walletP.innerText = `🔗 Connected as: ${currentAccount}`;
   // Cargamos el ABI y la dirección del contrato
@@ -52,10 +53,9 @@ connectBtn.onclick = async () => {
   console.log("Conexion y contrato listos");
 } catch (err){ 
   console.error("Wallet connection error:", err);
-  walletP.innetText = "Error al conectar wallet.";
+  walletP.innerText = "Error al conectar wallet.";
 }
-};
-
+}; 
 async function checkBalance() {
   if (!contract || !signer) {
     return alert("Primero conecta tu wallet.");
@@ -72,13 +72,13 @@ async function checkBalance() {
   }
 
   async function displayOwnerNFT() {
-    const tokenIds = await contract.methods.tokenOfOwner(currentAccount).call();
+    const tokenIds = await contract.tokenOfOwner(currentAccount);
 
     const nftContainer = document.getElementById("nft-container");
     nftContainer.innerHTML = ""; // Limpiar antes de renderizar
 
     for (let tokenId of tokenIds) {
-      const tokenUri = await contract.methods.tokenURI(tokenId).call();
+      const tokenUri = await contract.tokenURI(tokenId);
 
       try {
         const response = await fetch(tokenUri);
@@ -123,11 +123,15 @@ async function checkBalance() {
     const ownedTokens = [];
 
     for (let tokenId = 0; token < maxSupply; tokenId++) {
-      const owner = await contract.ownerOf(tokenId).catch(() => null);
-      if (owner && owner.toLowerCase() === userAddress.toLowerCase()) {
+      try {
+      const owner = await contract.ownerOf(tokenId);
+      if (owner.toLowerCase() === userAddress.toLowerCase()) {
         ownedTokens.push(tokenId);
       }
+    } catch (error) {
+      // Token no minteado, seguimos
     }
+  }
 
     if(ownedTokens.length > 0) {
       document.getElementById("nft-info").innerText =
@@ -138,8 +142,8 @@ async function checkBalance() {
   }catch (error) {
     console.error("Error al obtener tus tokens:", error);
     document.getElementById("nft-info").innerText = "Error al obtener tus tokens.";
+   }
   }
-}
  
   //mint NFT con pago y mostrar imagen
   async function mintNFT() {
@@ -149,8 +153,8 @@ async function checkBalance() {
     }
 
     try {
-      const mintTx = await contract.mintWhithPayment({
-        value: ethers.parseEther("0.0001", "ether") // El valor exacto que exigimos en el contrato
+      const mintTx = await contract.mintWithPayment({
+        value: ethers.utils.parseEther("0.0001") // El valor exacto que exigimos en el contrato
       });
 
       console.log("Minteando, espera confirmación...");
@@ -199,21 +203,21 @@ async function showTokenImage() {
     } else {
       document.getElementById("nft-info").innerText = "You don't own any NFT yet.";
     }
+   }catch (error) {
+     console.error("Error displaying NFT image:", error);
+     document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
+   }
+  }
 
   async function getMintedCount() {
     if (!contract) {
       alert(`Connect your wallet first.`);
       return;
     } 
-    const totalMinted = await contract._tokenIdCounter();
+    const totalMinted = await contract.totalMinted();
     alert(`Total NFTs minteados: ${totalMinted}`);
   }
-  } catch (error) {
-    console.error("Error displaying NFT image:", error);
-    document.getElementById("nft-info").innerText = "Failet to fetch NFT image.";
-  }
-
+ 
    window.onload = async () => {
    await loadContract();
-}
 }
