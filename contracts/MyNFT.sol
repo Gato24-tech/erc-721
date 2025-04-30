@@ -71,6 +71,11 @@ contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
     _setTokenURI(tokenId, newURI);
 }
 
+    function totalMinted() public view returns (uint256) {
+        return _tokenIdCounter.current();
+
+    }
+
     // 🔒 Bloquea el token para evitar transferencias
     function lockToken(uint256 tokenId) external onlyOwner {
         require(ownerOf(tokenId) == msg.sender || getApproved(tokenId) == msg.sender, "Not authorized");
