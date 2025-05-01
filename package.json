@@ -17,6 +17,7 @@
     "hardhat": "^2.22.19"
   },
   "dependencies": {
+    "@lighthouse-web3/sdk": "^0.3.7",
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@openzeppelin/contracts": "^4.9.3",
     "dotenv": "^16.5.0",
