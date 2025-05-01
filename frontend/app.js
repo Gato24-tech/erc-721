@@ -100,9 +100,10 @@ async function showTokenImage() {
 
     if (foundTokenId !== null) {
       const tokenURI = await contract.tokenURI(foundTokenId);
-      const response = await fetch(tokenURI);
+      const gatewayUrl = tokenURI.replace("ipfs://","https://gateway.lighthouse.storage/ipfs/");
+      const response = await fetch(gatewayURL);
       const metadata = await response.json();
-      const imageUrl = metadata.image;
+      const imageUrl = metadata.image.replace("ipfs://", "https://gateway.lighthouse.storage/ipfs/");
 
       document.getElementById("nft-info").innerHTML = `
         <strong>Token ID:</strong> ${foundTokenId}<br>
