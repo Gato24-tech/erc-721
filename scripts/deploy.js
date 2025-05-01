@@ -13,7 +13,8 @@ async function main() {
   }
 
    // Argumentos para el constructor:
-  const baseUri = "https://gateway.pinata.cloud/ipfs/QmRgAgZ9U5AZEdp3NrbVVWspnb5oEJW9v7UUTqRmWMoEwn/"; // Puedes poner un valor real o provisional
+  const baseUri = https://gateway.lighthouse.storage/ipfs/QmVMyFBixk2tN4B2LgEccLhfsvQGRt4yTxpSLV7m4nwjQa/
+  ; // Puedes poner un valor real o provisional
   const maxSupply = 10;
 
   const Contract = await hre.ethers.getContractFactory("MyNFT");
