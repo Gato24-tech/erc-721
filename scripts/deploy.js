@@ -13,8 +13,8 @@ async function main() {
   }
 
    // Argumentos para el constructor:
-  const baseUri = https://gateway.lighthouse.storage/ipfs/QmVMyFBixk2tN4B2LgEccLhfsvQGRt4yTxpSLV7m4nwjQa/
-  ; // Puedes poner un valor real o provisional
+  const baseUri = "https://gateway.lighthouse.storage/ipfs/QmVMyFBixk2tN4B2LgEccLhfsvQGRt4yTxpSLV7m4nwjQa/"
+   ;// Puedes poner un valor real o provisional
   const maxSupply = 10;
 
   const Contract = await hre.ethers.getContractFactory("MyNFT");
