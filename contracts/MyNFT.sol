@@ -67,7 +67,7 @@ contract MyNFT is ERC721, ERC721URIStorage, Pausable, Ownable {
 
     _safeMint(msg.sender, tokenId); // mintea al owner
 
-    string memory newURI = string(abi.encodePacked(baseURI, uint2str(tokenId))); // URI dinámica
+    string memory newURI = string(abi.encodePacked(baseURI, uint2str(tokenId),".json")); // URI dinámica
     _setTokenURI(tokenId, newURI);
 }
 
