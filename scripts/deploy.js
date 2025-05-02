@@ -13,7 +13,7 @@ async function main() {
   }
 
    // Argumentos para el constructor:
-  const baseUri = "https://gateway.lighthouse.storage/ipfs/bafybeifkw4lslpuwjtzgshvddkhdsvhhp4ztihfj5fnyi7n47b43mo5j2m";
+  const baseUri = "https://gateway.lighthouse.storage/ipfs://bafybeic3o3g72plsbnzurhie2odmf7pkyqbpej5hdmqtogcors236hsnqq";
    // Puedes poner un valor real o provisional
   const maxSupply = 10;
 
